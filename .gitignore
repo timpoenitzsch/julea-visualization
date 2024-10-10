@@ -22,3 +22,5 @@ bld*/
 
 # Visual Studio Code
 .vscode/
+benchmark_results.csv
+prometheus_metrics.txt

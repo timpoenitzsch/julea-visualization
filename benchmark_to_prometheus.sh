@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Erstelle den Ordner für die CSV-Dateien, falls er nicht existiert
+mkdir -p benchmark_csv
+
+# Erzeuge den Namen der neuen CSV-Datei mit dem aktuellen Timestamp
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+CSV_FILE="benchmark_csv/benchmark_results_$TIMESTAMP.csv"
+PROMETHEUS_FILE="/home/tim/benchmark_metrics.txt"
+
+# Führe den Benchmark-Befehl aus und speichere die Ausgabe in der CSV-Datei
+./scripts/benchmark.sh -m > "$CSV_FILE"
+
+# Erstelle eine Prometheus-kompatible Datei
+echo "" > "$PROMETHEUS_FILE"  # Leere die Datei, falls sie existiert
+
+# Gehe durch alle CSV-Dateien im Ordner benchmark_csv und lese die Daten
+for FILE in benchmark_csv/benchmark_results_*.csv; do
+  # Lese jede CSV-Datei und konvertiere die Werte in Prometheus-kompatible Metriken
+  while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
+    # Überspringe die Kopfzeile
+    if [[ "$name" == "name" ]]; then
+      continue
+    fi
+
+    # Schreibe die Prometheus-Metriken in die Datei
+    echo "# HELP benchmark_elapsed Zeit, die für den Benchmark-Vorgang benötigt wurde (ohne den Benchmark-overhead)" >> "$PROMETHEUS_FILE"
+    echo "# TYPE benchmark_elapsed gauge" >> "$PROMETHEUS_FILE"
+    echo "benchmark_elapsed{name=\"$name\",timestamp=\"$TIMESTAMP\"} $elapsed" >> "$PROMETHEUS_FILE"
+
+    echo "# HELP benchmark_operations Anzahl der durchgeführten Operationen im Benchmark pro Sekunde" >> "$PROMETHEUS_FILE"
+    echo "# TYPE benchmark_operations gauge" >> "$PROMETHEUS_FILE"
+    echo "benchmark_operations{name=\"$name\",timestamp=\"$TIMESTAMP\"} $operations" >> "$PROMETHEUS_FILE"
+
+    echo "# HELP benchmark_total_elapsed Gesamtzeit, die für den Benchmark benötigt wurde" >> "$PROMETHEUS_FILE"
+    echo "# TYPE benchmark_total_elapsed gauge" >> "$PROMETHEUS_FILE"
+    echo "benchmark_total_elapsed{name=\"$name\",timestamp=\"$TIMESTAMP\"} $total_elapsed" >> "$PROMETHEUS_FILE"
+
+  done < "$FILE"
+done
+
+# Starte einen einfachen HTTP-Server auf Port 8080, um die Metriken bereitzustellen
+echo "Starting HTTP server on port 8080 to serve Prometheus metrics..."
+python3 -m http.server 8080
