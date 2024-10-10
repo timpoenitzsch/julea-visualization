@@ -1,12 +1,15 @@
 #!/bin/bash
 
+# Setze den Basisordner
+BASE_DIR="/home/tim/BA-Projekt/julea-visualization"
+
 # Erstelle den Ordner für die CSV-Dateien, falls er nicht existiert
-mkdir -p benchmark_csv
+mkdir -p "$BASE_DIR/benchmark_csv"
 
 # Erzeuge den Namen der neuen CSV-Datei mit dem aktuellen Timestamp
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-CSV_FILE="benchmark_csv/benchmark_results_$TIMESTAMP.csv"
-PROMETHEUS_FILE="/home/tim/benchmark_metrics.txt"
+CSV_FILE="$BASE_DIR/benchmark_csv/benchmark_results_$TIMESTAMP.csv"
+PROMETHEUS_FILE="$BASE_DIR/benchmark_metrics.txt"
 
 # Führe den Benchmark-Befehl aus und speichere die Ausgabe in der CSV-Datei
 ./scripts/benchmark.sh -m > "$CSV_FILE"
@@ -15,7 +18,7 @@ PROMETHEUS_FILE="/home/tim/benchmark_metrics.txt"
 echo "" > "$PROMETHEUS_FILE"  # Leere die Datei, falls sie existiert
 
 # Gehe durch alle CSV-Dateien im Ordner benchmark_csv und lese die Daten
-for FILE in benchmark_csv/benchmark_results_*.csv; do
+for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
   # Lese jede CSV-Datei und konvertiere die Werte in Prometheus-kompatible Metriken
   while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
     # Überspringe die Kopfzeile
@@ -41,4 +44,5 @@ done
 
 # Starte einen einfachen HTTP-Server auf Port 8080, um die Metriken bereitzustellen
 echo "Starting HTTP server on port 8080 to serve Prometheus metrics..."
+cd "$BASE_DIR"
 python3 -m http.server 8080
