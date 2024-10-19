@@ -26,18 +26,22 @@ for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
       continue
     fi
 
-    # Schreibe die Prometheus-Metriken in die Datei
+    # Konvertiere den Timestamp der CSV-Datei in UNIX-Zeit (Sekunden seit 1970)
+    FILE_TIMESTAMP=$(basename "$FILE" | cut -d'_' -f3 | sed 's/.csv//')
+    UNIX_TIMESTAMP=$(date -d "$FILE_TIMESTAMP" +%s)
+
+    # Schreibe die Prometheus-Metriken in die Datei mit explizitem UNIX-Timestamp
     echo "# HELP benchmark_elapsed Zeit, die für den Benchmark-Vorgang benötigt wurde (ohne den Benchmark-overhead)" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_elapsed gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_elapsed{name=\"$name\",timestamp=\"$TIMESTAMP\"} $elapsed" >> "$PROMETHEUS_FILE"
+    echo "benchmark_elapsed{name=\"$name\"} $elapsed $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
     echo "# HELP benchmark_operations Anzahl der durchgeführten Operationen im Benchmark pro Sekunde" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_operations gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_operations{name=\"$name\",timestamp=\"$TIMESTAMP\"} $operations" >> "$PROMETHEUS_FILE"
+    echo "benchmark_operations{name=\"$name\"} $operations $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
     echo "# HELP benchmark_total_elapsed Gesamtzeit, die für den Benchmark benötigt wurde" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_total_elapsed gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_total_elapsed{name=\"$name\",timestamp=\"$TIMESTAMP\"} $total_elapsed" >> "$PROMETHEUS_FILE"
+    echo "benchmark_total_elapsed{name=\"$name\"} $total_elapsed $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
   done < "$FILE"
 done
