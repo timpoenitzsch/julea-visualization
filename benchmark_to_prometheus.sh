@@ -2,28 +2,30 @@
 
 # Setze den Basisordner
 BASE_DIR="/home/tim/BA-Projekt/julea-visualization"
-
-# Erstelle den Ordner für die CSV-Dateien, falls er nicht existiert
-mkdir -p "$BASE_DIR/benchmark_csv"
-
-# Erzeuge den Namen der neuen CSV-Datei mit dem aktuellen Timestamp
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-CSV_FILE="$BASE_DIR/benchmark_csv/benchmark_results_$TIMESTAMP.csv"
+CSV_DIR="$BASE_DIR/benchmark_csv"
 PROMETHEUS_FILE="$BASE_DIR/benchmark_metrics.txt"
 
-# Führe den Benchmark-Befehl aus und speichere die Ausgabe in der CSV-Datei
+# Erstelle den Ordner für die CSV-Dateien, falls er nicht existiert
+mkdir -p "$CSV_DIR"
+
+# Erzeuge den Namen der neuen CSV-Datei mit dem aktuellen Unix-Timestamp
+UNIX_TIMESTAMP=$(date +%s)
+CSV_FILE="$CSV_DIR/benchmark_results_$UNIX_TIMESTAMP.csv"
+
+# Führe den Benchmark-Befehl aus und speichere die Ausgabe in der neuen CSV-Datei
 ./scripts/benchmark.sh -m > "$CSV_FILE"
 
 # Erstelle eine Prometheus-kompatible Datei
 echo "" > "$PROMETHEUS_FILE"  # Leere die Datei, falls sie existiert
 
 # Gehe durch alle CSV-Dateien im Ordner benchmark_csv und lese die Daten
-for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
-  # Extrahiere den Timestamp aus dem Dateinamen (z.B. 20241010_142230)
+for FILE in "$CSV_DIR"/benchmark_results_*.csv; do
+  # Extrahiere den Timestamp (Unix-Zeit) aus dem Dateinamen
   FILE_TIMESTAMP=$(basename "$FILE" | cut -d'_' -f3 | sed 's/.csv//')
 
-  # Konvertiere den extrahierten Timestamp in UNIX-Zeit
-  UNIX_TIMESTAMP=$(date -d "$FILE_TIMESTAMP" +%s)
+  # Gib den Timestamp und den Dateinamen zu Testzwecken aus
+  echo "Verarbeite Datei: $FILE"
+  echo "Timestamp für die Datei (Unix-Zeit): $FILE_TIMESTAMP"
 
   # Lese jede CSV-Datei und konvertiere die Werte in Prometheus-kompatible Metriken
   while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
@@ -32,18 +34,18 @@ for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
       continue
     fi
 
-    # Schreibe die Prometheus-Metriken in die Datei mit dem Dateitimestamp
+    # Schreibe die Prometheus-Metriken in die Datei mit explizitem UNIX-Timestamp
     echo "# HELP benchmark_elapsed Zeit, die für den Benchmark-Vorgang benötigt wurde (ohne den Benchmark-overhead)" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_elapsed gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_elapsed{name=\"$name\"} $elapsed $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
+    echo "benchmark_elapsed{name=\"$name\"} $elapsed $FILE_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
     echo "# HELP benchmark_operations Anzahl der durchgeführten Operationen im Benchmark pro Sekunde" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_operations gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_operations{name=\"$name\"} $operations $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
+    echo "benchmark_operations{name=\"$name\"} $operations $FILE_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
     echo "# HELP benchmark_total_elapsed Gesamtzeit, die für den Benchmark benötigt wurde" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_total_elapsed gauge" >> "$PROMETHEUS_FILE"
-    echo "benchmark_total_elapsed{name=\"$name\"} $total_elapsed $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
+    echo "benchmark_total_elapsed{name=\"$name\"} $total_elapsed $FILE_TIMESTAMP" >> "$PROMETHEUS_FILE"
 
   done < "$FILE"
 done
