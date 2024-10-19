@@ -19,6 +19,12 @@ echo "" > "$PROMETHEUS_FILE"  # Leere die Datei, falls sie existiert
 
 # Gehe durch alle CSV-Dateien im Ordner benchmark_csv und lese die Daten
 for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
+  # Extrahiere den Timestamp aus dem Dateinamen (z.B. 20241010_142230)
+  FILE_TIMESTAMP=$(basename "$FILE" | cut -d'_' -f3 | sed 's/.csv//')
+
+  # Konvertiere den extrahierten Timestamp in UNIX-Zeit
+  UNIX_TIMESTAMP=$(date -d "$FILE_TIMESTAMP" +%s)
+
   # Lese jede CSV-Datei und konvertiere die Werte in Prometheus-kompatible Metriken
   while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
     # Überspringe die Kopfzeile
@@ -26,11 +32,7 @@ for FILE in "$BASE_DIR"/benchmark_csv/benchmark_results_*.csv; do
       continue
     fi
 
-    # Konvertiere den Timestamp der CSV-Datei in UNIX-Zeit (Sekunden seit 1970)
-    FILE_TIMESTAMP=$(basename "$FILE" | cut -d'_' -f3 | sed 's/.csv//')
-    UNIX_TIMESTAMP=$(date -d "$FILE_TIMESTAMP" +%s)
-
-    # Schreibe die Prometheus-Metriken in die Datei mit explizitem UNIX-Timestamp
+    # Schreibe die Prometheus-Metriken in die Datei mit dem Dateitimestamp
     echo "# HELP benchmark_elapsed Zeit, die für den Benchmark-Vorgang benötigt wurde (ohne den Benchmark-overhead)" >> "$PROMETHEUS_FILE"
     echo "# TYPE benchmark_elapsed gauge" >> "$PROMETHEUS_FILE"
     echo "benchmark_elapsed{name=\"$name\"} $elapsed $UNIX_TIMESTAMP" >> "$PROMETHEUS_FILE"
