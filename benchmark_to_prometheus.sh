@@ -23,7 +23,6 @@ for FILE in "$CSV_DIR"/benchmark_results_*.csv; do
   # Extrahiere den Timestamp (Unix-Zeit) aus dem Dateinamen
   FILE_TIMESTAMP=$(basename "$FILE" | cut -d'_' -f3 | sed 's/.csv//')
 
-  # Gib den Timestamp und den Dateinamen zu Testzwecken aus
   echo "Verarbeite Datei: $FILE"
   echo "Timestamp für die Datei (Unix-Zeit): $FILE_TIMESTAMP"
 
