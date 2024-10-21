@@ -26,3 +26,4 @@ benchmark_results.csv
 prometheus_metrics.txt
 benchmark_csv/*
 benchmark_metrics.txt
+benchmark_csv_total/*
