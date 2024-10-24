@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setze den Basisordner und den Ausgabeordner
-BASE_DIR="/home/tim/BA-Projekt/julea-visualization"
+BASE_DIR="../"
 CSV_DIR="$BASE_DIR/benchmark_csv"
 OUTPUT_DIR="$BASE_DIR/benchmark_csv_total"
 OUTPUT_FILE="$OUTPUT_DIR/benchmark_total.csv"

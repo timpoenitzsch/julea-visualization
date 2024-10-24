@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setze den Basisordner
-BASE_DIR="/home/tim/BA-Projekt/julea-visualization"
+BASE_DIR="../"
 CSV_DIR="$BASE_DIR/benchmark_csv"
 
 # Erstelle den Ordner für die CSV-Dateien, falls er nicht existiert
