@@ -12,7 +12,7 @@ UNIX_TIMESTAMP=$(date +%s)
 CSV_FILE="$CSV_DIR/benchmark_results_$UNIX_TIMESTAMP.csv"
 
 # Führe den Benchmark-Befehl aus und speichere die Ausgabe in der neuen CSV-Datei
-./scripts/benchmark.sh -m > "$CSV_FILE"
+../scripts/benchmark.sh -m > "$CSV_FILE"
 
 echo "CSV-Datei erstellt: $CSV_FILE"
 echo "Timestamp (Unix-Zeit): $UNIX_TIMESTAMP"
