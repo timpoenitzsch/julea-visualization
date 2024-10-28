@@ -12,20 +12,26 @@ mkdir -p "$ALERTING_DIR"
 # Initialisiere die Werte-CSV-Datei mit dem Kopf
 echo "name,min_elapsed,max_elapsed,mean_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,file_count" > "$VALUES_FILE"
 
-# Verarbeite die erstellten Benchmark-Dateien
-for file in "$CSV_DIR"/benchmark_results_*.csv; do
+# Anzahl der zu verarbeitenden Dateien (optional)
+NUM_FILES=${1:-0}
+
+# Erstelle eine Liste der zu verarbeitenden Dateien
+if [ "$NUM_FILES" -gt 0 ]; then
+    # Wähle die neuesten NUM_FILES Dateien aus
+    mapfile -t files < <(ls -1 -t "$CSV_DIR"/benchmark_results_*.csv | head -n "$NUM_FILES")
+else
+    # Verarbeite alle Dateien
+    mapfile -t files < <(ls -1 "$CSV_DIR"/benchmark_results_*.csv)
+fi
+
+# Verarbeite die ausgewählten Benchmark-Dateien
+for file in "${files[@]}"; do
     # Überspringe die Kopfzeile und verarbeite die Datei
     tail -n +2 "$file" | while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
         # Prüfe, ob der Name schon existiert und berechne min, max, mean für elapsed und total_elapsed
         if grep -q "^$name," "$VALUES_FILE"; then
             # Extrahiere bestehende Werte aus der Datei
-            min_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $2}' "$VALUES_FILE")
-            max_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $3}' "$VALUES_FILE")
-            mean_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $4}' "$VALUES_FILE")
-            min_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $5}' "$VALUES_FILE")
-            max_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $6}' "$VALUES_FILE")
-            mean_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $7}' "$VALUES_FILE")
-            file_count=$(awk -F',' -v n="$name" '$1 == n {print $8}' "$VALUES_FILE")
+            IFS=',' read -r _ min_elapsed max_elapsed mean_elapsed min_total_elapsed max_total_elapsed mean_total_elapsed file_count <<< "$(grep "^$name," "$VALUES_FILE")"
 
             # Berechne min, max und aktualisierten Mittelwert für elapsed
             min_elapsed=$(echo "$min_elapsed $elapsed" | awk '{if ($2 < $1) print $2; else print $1}')
