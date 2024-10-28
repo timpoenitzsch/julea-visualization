@@ -27,4 +27,5 @@ prometheus_metrics.txt
 benchmark_csv/*
 benchmark_metrics.txt
 benchmark_csv_total/*
-alerting/values.csv
+alerting/*
+commit_timestamps/*
