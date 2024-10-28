@@ -23,8 +23,8 @@ for i in $(seq 1 $NUM_ITERATIONS); do
     echo "CSV-Datei erstellt: $CSV_FILE"
     echo "Timestamp (Unix-Zeit): $UNIX_TIMESTAMP"
     
-    # Warte 10 Minuten, bevor der nächste Benchmark ausgeführt wird
-    if [ "$i" -lt 10 ]; then
+    # Warte x Minuten, bevor der nächste Benchmark ausgeführt wird
+    if [ "$i" -lt $NUM_ITERATIONS ]; then
         sleep 600
     fi
 done
