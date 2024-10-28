@@ -10,7 +10,7 @@ VALUES_FILE="$ALERTING_DIR/values.csv"
 mkdir -p "$ALERTING_DIR"
 
 # Initialisiere die Werte-CSV-Datei mit dem Kopf
-echo "name,min_elapsed,max_elapsed,mean_elapsed,count_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,count_total_elapsed" > "$VALUES_FILE"
+echo "name,min_elapsed,max_elapsed,mean_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,file_count" > "$VALUES_FILE"
 
 # Verarbeite die erstellten Benchmark-Dateien
 for file in "$CSV_DIR"/benchmark_results_*.csv; do
@@ -22,35 +22,39 @@ for file in "$CSV_DIR"/benchmark_results_*.csv; do
             min_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $2}' "$VALUES_FILE")
             max_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $3}' "$VALUES_FILE")
             mean_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $4}' "$VALUES_FILE")
-            count_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $5}' "$VALUES_FILE")
-
-            min_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $6}' "$VALUES_FILE")
-            max_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $7}' "$VALUES_FILE")
-            mean_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $8}' "$VALUES_FILE")
-            count_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $9}' "$VALUES_FILE")
+            min_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $5}' "$VALUES_FILE")
+            max_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $6}' "$VALUES_FILE")
+            mean_total_elapsed=$(awk -F',' -v n="$name" '$1 == n {print $7}' "$VALUES_FILE")
+            file_count=$(awk -F',' -v n="$name" '$1 == n {print $8}' "$VALUES_FILE")
 
             # Berechne min, max und aktualisierten Mittelwert für elapsed
             min_elapsed=$(echo "$min_elapsed $elapsed" | awk '{if ($2 < $1) print $2; else print $1}')
             max_elapsed=$(echo "$max_elapsed $elapsed" | awk '{if ($2 > $1) print $2; else print $1}')
-            sum_elapsed=$(echo "$mean_elapsed * $count_elapsed + $elapsed" | bc -l)
-            count_elapsed=$((count_elapsed + 1))
-            mean_elapsed=$(echo "$sum_elapsed / $count_elapsed" | bc -l)
+
+            # Speichere vorherigen file_count
+            file_count_before=$file_count
+            file_count=$((file_count + 1))
+
+            # Berechne neuen Mittelwert für elapsed
+            sum_elapsed=$(echo "$mean_elapsed * $file_count_before + $elapsed" | bc -l)
+            mean_elapsed=$(echo "$sum_elapsed / $file_count" | bc -l)
 
             # Berechne min, max und aktualisierten Mittelwert für total_elapsed
             min_total_elapsed=$(echo "$min_total_elapsed $total_elapsed" | awk '{if ($2 < $1) print $2; else print $1}')
             max_total_elapsed=$(echo "$max_total_elapsed $total_elapsed" | awk '{if ($2 > $1) print $2; else print $1}')
-            sum_total_elapsed=$(echo "$mean_total_elapsed * $count_total_elapsed + $total_elapsed" | bc -l)
-            count_total_elapsed=$((count_total_elapsed + 1))
-            mean_total_elapsed=$(echo "$sum_total_elapsed / $count_total_elapsed" | bc -l)
+
+            # Berechne neuen Mittelwert für total_elapsed
+            sum_total_elapsed=$(echo "$mean_total_elapsed * $file_count_before + $total_elapsed" | bc -l)
+            mean_total_elapsed=$(echo "$sum_total_elapsed / $file_count" | bc -l)
 
             # Escape Schrägstriche und andere Sonderzeichen in $name für sed
             escaped_name=$(printf '%s\n' "$name" | sed 's/[\/&]/\\&/g')
 
             # Aktualisiere die Datei mit den neuen Werten
-            sed -i "s|^$escaped_name,.*|$name,$min_elapsed,$max_elapsed,$mean_elapsed,$count_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$count_total_elapsed|" "$VALUES_FILE"
+            sed -i "s|^$escaped_name,.*|$name,$min_elapsed,$max_elapsed,$mean_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$file_count|" "$VALUES_FILE"
         else
             # Füge neuen Eintrag für den Namen hinzu, inklusive Zähler
-            echo "$name,$elapsed,$elapsed,$elapsed,1,$total_elapsed,$total_elapsed,$total_elapsed,1" >> "$VALUES_FILE"
+            echo "$name,$elapsed,$elapsed,$elapsed,$total_elapsed,$total_elapsed,$total_elapsed,1" >> "$VALUES_FILE"
         fi
     done
 done
