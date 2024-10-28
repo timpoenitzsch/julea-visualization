@@ -11,6 +11,6 @@ mkdir -p "$CSV_DIR"
 echo "SHA,timestamp" > "$OUTPUT_FILE"
 
 # Füge die Informationen der Commits hinzu
-git log --pretty=format:'%H,%at' >> "$OUTPUT_FILE"
+git log --pretty=format:'%h,%at' >> "$OUTPUT_FILE"
 
 echo "Die Commit-Informationen wurden in $OUTPUT_FILE gespeichert."
