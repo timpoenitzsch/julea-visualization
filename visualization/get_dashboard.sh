@@ -12,5 +12,3 @@ sleep 2  # Falls der Server etwas Zeit zum Starten benötigt
 
 echo "Sending data with curl"
 curl -X POST -H "Authorization: Bearer $GRAFANA_API_TOKEN" -H "Content-Type: application/json" -d @visualization/benchmark_dashboard.json http://localhost:3000/api/dashboards/db
-
-kill $!  # Beendet den letzten im Hintergrund gestarteten Prozess (den HTTP-Server)
