@@ -10,6 +10,7 @@ VALUES_FILE="$ALERTING_DIR/values.csv"
 mkdir -p "$CSV_DIR"
 
 NUM_ITERATIONS=${1:-10}
+SLEEP_TIME=${2:-600}
 
 # Führe x Benchmarks aus
 for i in $(seq 1 $NUM_ITERATIONS); do
@@ -25,6 +26,6 @@ for i in $(seq 1 $NUM_ITERATIONS); do
     
     # Warte x Minuten, bevor der nächste Benchmark ausgeführt wird
     if [ "$i" -lt $NUM_ITERATIONS ]; then
-        sleep 600
+        sleep $SLEEP_TIME
     fi
 done
