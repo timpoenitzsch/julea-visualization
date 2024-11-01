@@ -1,521 +1,591 @@
 {
-    "dashboard": {
-        "annotations": {
-            "list": [
-                {
-                    "builtIn": 1,
-                    "datasource": {
-                        "type": "grafana",
-                        "uid": "-- Grafana --"
-                    },
-                    "enable": true,
-                    "hide": true,
-                    "iconColor": "rgba(0, 211, 255, 1)",
-                    "name": "Annotations & Alerts",
-                    "type": "dashboard"
-                }
-            ]
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
         },
-        "editable": true,
-        "fiscalYearStartMonth": 0,
-        "graphTooltip": 0,
-        "id": null,
-        "links": [],
-        "panels": [
-            {
-                "datasource": {
-                    "default": false,
-                    "type": "yesoreyeram-infinity-datasource",
-                    "uid": "be1j4lk4kfs3ka"
-                },
-                "fieldConfig": {
-                    "defaults": {
-                        "color": {
-                            "mode": "palette-classic"
-                        },
-                        "custom": {
-                            "axisBorderShow": false,
-                            "axisCenteredZero": false,
-                            "axisColorMode": "text",
-                            "axisLabel": "",
-                            "axisPlacement": "auto",
-                            "barAlignment": 0,
-                            "barWidthFactor": 0.6,
-                            "drawStyle": "line",
-                            "fillOpacity": 0,
-                            "gradientMode": "none",
-                            "hideFrom": {
-                                "legend": false,
-                                "tooltip": false,
-                                "viz": false
-                            },
-                            "insertNulls": false,
-                            "lineInterpolation": "linear",
-                            "lineWidth": 1,
-                            "pointSize": 5,
-                            "scaleDistribution": {
-                                "type": "linear"
-                            },
-                            "showPoints": "auto",
-                            "spanNulls": false,
-                            "stacking": {
-                                "group": "A",
-                                "mode": "none"
-                            },
-                            "thresholdsStyle": {
-                                "mode": "off"
-                            }
-                        },
-                        "mappings": [],
-                        "thresholds": {
-                            "mode": "absolute",
-                            "steps": [
-                                {
-                                    "color": "green",
-                                    "value": null
-                                },
-                                {
-                                    "color": "red",
-                                    "value": 80
-                                }
-                            ]
-                        }
-                    },
-                    "overrides": []
-                },
-                "gridPos": {
-                    "h": 8,
-                    "w": 12,
-                    "x": 0,
-                    "y": 0
-                },
-                "id": null,
-                "options": {
-                    "legend": {
-                        "calcs": [],
-                        "displayMode": "list",
-                        "placement": "bottom",
-                        "showLegend": true
-                    },
-                    "tooltip": {
-                        "mode": "single",
-                        "sort": "none"
-                    }
-                },
-                "targets": [
-                    {
-                        "columns": [
-                            {
-                                "selector": "name",
-                                "text": "name",
-                                "type": "string"
-                            },
-                            {
-                                "selector": "total_elapsed",
-                                "text": "total_elapsed",
-                                "type": "number"
-                            },
-                            {
-                                "selector": "timestamp",
-                                "text": "timestamp",
-                                "type": "timestamp_epoch_s"
-                            }
-                        ],
-                        "datasource": {
-                            "type": "yesoreyeram-infinity-datasource",
-                            "uid": "be1j4lk4kfs3ka"
-                        },
-                        "filters": [],
-                        "format": "timeseries",
-                        "global_query_id": "",
-                        "refId": "A",
-                        "type": "csv",
-                        "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
-                        "url_options": {
-                            "method": "GET"
-                        }
-                    }
-                ],
-                "title": "Total Elapsed",
-                "type": "timeseries"
+        {
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "be1j4lk4kfs3ka"
+          },
+          "enable": true,
+          "hide": false,
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "isRegion": false,
+          "mappings": {
+            "text": {
+              "source": "field",
+              "value": "SHA"
             },
-            {
-                "datasource": {
-                    "default": false,
-                    "type": "yesoreyeram-infinity-datasource",
-                    "uid": "be1j4lk4kfs3ka"
-                },
-                "fieldConfig": {
-                    "defaults": {
-                        "color": {
-                            "mode": "palette-classic"
-                        },
-                        "custom": {
-                            "axisBorderShow": false,
-                            "axisCenteredZero": false,
-                            "axisColorMode": "text",
-                            "axisLabel": "",
-                            "axisPlacement": "auto",
-                            "barAlignment": 0,
-                            "barWidthFactor": 0.6,
-                            "drawStyle": "line",
-                            "fillOpacity": 0,
-                            "gradientMode": "none",
-                            "hideFrom": {
-                                "legend": false,
-                                "tooltip": false,
-                                "viz": false
-                            },
-                            "insertNulls": false,
-                            "lineInterpolation": "linear",
-                            "lineWidth": 1,
-                            "pointSize": 5,
-                            "scaleDistribution": {
-                                "type": "linear"
-                            },
-                            "showPoints": "auto",
-                            "spanNulls": false,
-                            "stacking": {
-                                "group": "A",
-                                "mode": "none"
-                            },
-                            "thresholdsStyle": {
-                                "mode": "off"
-                            }
-                        },
-                        "mappings": [],
-                        "thresholds": {
-                            "mode": "absolute",
-                            "steps": [
-                                {
-                                    "color": "green",
-                                    "value": null
-                                },
-                                {
-                                    "color": "red",
-                                    "value": 80
-                                }
-                            ]
-                        }
-                    },
-                    "overrides": []
-                },
-                "gridPos": {
-                    "h": 8,
-                    "w": 12,
-                    "x": 0,
-                    "y": 8
-                },
-                "id": null,
-                "options": {
-                    "legend": {
-                        "calcs": [],
-                        "displayMode": "list",
-                        "placement": "bottom",
-                        "showLegend": true
-                    },
-                    "tooltip": {
-                        "mode": "single",
-                        "sort": "none"
-                    }
-                },
-                "targets": [
-                    {
-                        "columns": [
-                            {
-                                "selector": "name",
-                                "text": "name",
-                                "type": "string"
-                            },
-                            {
-                                "selector": "bytes",
-                                "text": "bytes",
-                                "type": "number"
-                            },
-                            {
-                                "selector": "timestamp",
-                                "text": "timestamp",
-                                "type": "timestamp_epoch_s"
-                            }
-                        ],
-                        "datasource": {
-                            "type": "yesoreyeram-infinity-datasource",
-                            "uid": "be1j4lk4kfs3ka"
-                        },
-                        "filters": [],
-                        "format": "timeseries",
-                        "global_query_id": "",
-                        "refId": "A",
-                        "type": "csv",
-                        "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
-                        "url_options": {
-                            "method": "GET"
-                        }
-                    }
-                ],
-                "title": "Bytes",
-                "type": "timeseries"
+            "time": {
+              "source": "field",
+              "value": "timestamp"
             },
-            {
-                "datasource": {
-                    "default": false,
-                    "type": "yesoreyeram-infinity-datasource",
-                    "uid": "be1j4lk4kfs3ka"
-                },
-                "fieldConfig": {
-                    "defaults": {
-                        "color": {
-                            "mode": "palette-classic"
-                        },
-                        "custom": {
-                            "axisBorderShow": false,
-                            "axisCenteredZero": false,
-                            "axisColorMode": "text",
-                            "axisLabel": "",
-                            "axisPlacement": "auto",
-                            "barAlignment": 0,
-                            "barWidthFactor": 0.6,
-                            "drawStyle": "line",
-                            "fillOpacity": 0,
-                            "gradientMode": "none",
-                            "hideFrom": {
-                                "legend": false,
-                                "tooltip": false,
-                                "viz": false
-                            },
-                            "insertNulls": false,
-                            "lineInterpolation": "linear",
-                            "lineWidth": 1,
-                            "pointSize": 5,
-                            "scaleDistribution": {
-                                "type": "linear"
-                            },
-                            "showPoints": "auto",
-                            "spanNulls": false,
-                            "stacking": {
-                                "group": "A",
-                                "mode": "none"
-                            },
-                            "thresholdsStyle": {
-                                "mode": "off"
-                            }
-                        },
-                        "mappings": [],
-                        "thresholds": {
-                            "mode": "absolute",
-                            "steps": [
-                                {
-                                    "color": "green",
-                                    "value": null
-                                },
-                                {
-                                    "color": "red",
-                                    "value": 80
-                                }
-                            ]
-                        }
-                    },
-                    "overrides": []
-                },
-                "gridPos": {
-                    "h": 8,
-                    "w": 12,
-                    "x": 0,
-                    "y": 16
-                },
-                "id": null,
-                "options": {
-                    "legend": {
-                        "calcs": [],
-                        "displayMode": "list",
-                        "placement": "bottom",
-                        "showLegend": true
-                    },
-                    "tooltip": {
-                        "mode": "single",
-                        "sort": "none"
-                    }
-                },
-                "targets": [
-                    {
-                        "columns": [
-                            {
-                                "selector": "name",
-                                "text": "name",
-                                "type": "string"
-                            },
-                            {
-                                "selector": "operations",
-                                "text": "operations",
-                                "type": "number"
-                            },
-                            {
-                                "selector": "timestamp",
-                                "text": "timestamp",
-                                "type": "timestamp_epoch_s"
-                            }
-                        ],
-                        "datasource": {
-                            "type": "yesoreyeram-infinity-datasource",
-                            "uid": "be1j4lk4kfs3ka"
-                        },
-                        "filters": [],
-                        "format": "timeseries",
-                        "global_query_id": "",
-                        "refId": "A",
-                        "type": "csv",
-                        "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
-                        "url_options": {
-                            "method": "GET"
-                        }
-                    }
-                ],
-                "title": "Operations",
-                "type": "timeseries"
-            },
-            {
-                "datasource": {
-                    "default": false,
-                    "type": "yesoreyeram-infinity-datasource",
-                    "uid": "be1j4lk4kfs3ka"
-                },
-                "fieldConfig": {
-                    "defaults": {
-                        "color": {
-                            "mode": "palette-classic"
-                        },
-                        "custom": {
-                            "axisBorderShow": false,
-                            "axisCenteredZero": false,
-                            "axisColorMode": "text",
-                            "axisLabel": "",
-                            "axisPlacement": "auto",
-                            "barAlignment": 0,
-                            "barWidthFactor": 0.6,
-                            "drawStyle": "line",
-                            "fillOpacity": 0,
-                            "gradientMode": "none",
-                            "hideFrom": {
-                                "legend": false,
-                                "tooltip": false,
-                                "viz": false
-                            },
-                            "insertNulls": false,
-                            "lineInterpolation": "linear",
-                            "lineWidth": 1,
-                            "pointSize": 5,
-                            "scaleDistribution": {
-                                "type": "linear"
-                            },
-                            "showPoints": "auto",
-                            "spanNulls": false,
-                            "stacking": {
-                                "group": "A",
-                                "mode": "none"
-                            },
-                            "thresholdsStyle": {
-                                "mode": "off"
-                            }
-                        },
-                        "mappings": [],
-                        "thresholds": {
-                            "mode": "absolute",
-                            "steps": [
-                                {
-                                    "color": "green",
-                                    "value": null
-                                },
-                                {
-                                    "color": "red",
-                                    "value": 80
-                                }
-                            ]
-                        }
-                    },
-                    "overrides": []
-                },
-                "gridPos": {
-                    "h": 8,
-                    "w": 12,
-                    "x": 0,
-                    "y": 24
-                },
-                "id": null,
-                "options": {
-                    "legend": {
-                        "calcs": [],
-                        "displayMode": "list",
-                        "placement": "bottom",
-                        "showLegend": true
-                    },
-                    "tooltip": {
-                        "mode": "single",
-                        "sort": "none"
-                    }
-                },
-                "targets": [
-                    {
-                        "columns": [
-                            {
-                                "selector": "name",
-                                "text": "name",
-                                "type": "string"
-                            },
-                            {
-                                "selector": "elapsed",
-                                "text": "elapsed",
-                                "type": "number"
-                            },
-                            {
-                                "selector": "timestamp",
-                                "text": "timestamp",
-                                "type": "timestamp_epoch_s"
-                            }
-                        ],
-                        "datasource": {
-                            "type": "yesoreyeram-infinity-datasource",
-                            "uid": "be1j4lk4kfs3ka"
-                        },
-                        "filters": [],
-                        "format": "timeseries",
-                        "global_query_id": "",
-                        "refId": "A",
-                        "type": "csv",
-                        "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
-                        "url_options": {
-                            "method": "GET"
-                        }
-                    }
-                ],
-                "title": "Elapsed",
-                "type": "timeseries"
+            "timeEnd": {
+              "source": "field",
+              "value": "timestamp"
             }
-        ],
-        "refresh": "5s",
-        "schemaVersion": 39,
-        "tags": [],
-        "templating": {
-            "list": []
-        },
-        "time": {
-            "from": "now-7d",
-            "to": "now"
-        },
-        "timepicker": {
-            "refresh_intervals": [
-                "5s",
-                "10s",
-                "30s",
-                "1m",
-                "5m"
-            ]
-        },
-        "timezone": "browser",
-        "title": "script-test",
-        "uid": "fe1j7hmfq60w0f",
-        "version": null,
-        "weekStart": ""
+          },
+          "name": "Commit Annotations",
+          "target": {
+            "columns": [
+              {
+                "selector": "SHA",
+                "text": "SHA",
+                "type": "string"
+              },
+              {
+                "selector": "timestamp",
+                "text": "timestamp",
+                "type": "timestamp_epoch_s"
+              }
+            ],
+            "csv": {
+              "columns": [
+                {
+                  "text": "SHA",
+                  "type": "string"
+                },
+                {
+                  "text": "timestamp",
+                  "type": "timestamp_epoch_s"
+                }
+              ],
+              "delimiter": ",",
+              "skip_empty_lines": true
+            },
+            "filters": [],
+            "format": "table",
+            "global_query_id": "",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "csv",
+            "url": "http://localhost:8080/commit_timestamps/commit_timestamps.csv",
+            "url_options": {
+              "data": "",
+              "method": "GET"
+            }
+          },
+          "textField": "SHA",
+          "timeField": "timestamp",
+          "type": "annotation"
+        }
+      ]
     },
-    "folderId": 0,
-    "overwrite": true
-}
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "default": false,
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j4lk4kfs3ka"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": null,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.3.0",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "name",
+                "text": "name",
+                "type": "string"
+              },
+              {
+                "selector": "total_elapsed",
+                "text": "total_elapsed",
+                "type": "number"
+              },
+              {
+                "selector": "timestamp",
+                "text": "timestamp",
+                "type": "timestamp_epoch_s"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "be1j4lk4kfs3ka"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "refId": "A",
+            "root_selector": "",
+            "source": "url",
+            "type": "csv",
+            "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
+            "url_options": {
+              "data": "",
+              "method": "GET"
+            }
+          }
+        ],
+        "title": "Total Elapsed",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "default": false,
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j4lk4kfs3ka"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": null,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.3.0",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "name",
+                "text": "name",
+                "type": "string"
+              },
+              {
+                "selector": "bytes",
+                "text": "bytes",
+                "type": "number"
+              },
+              {
+                "selector": "timestamp",
+                "text": "timestamp",
+                "type": "timestamp_epoch_s"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "be1j4lk4kfs3ka"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "refId": "A",
+            "type": "csv",
+            "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
+            "url_options": {
+              "method": "GET"
+            }
+          }
+        ],
+        "title": "Bytes",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "default": false,
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j4lk4kfs3ka"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "id": null,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.3.0",
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "name",
+                "text": "name",
+                "type": "string"
+              },
+              {
+                "selector": "operations",
+                "text": "operations",
+                "type": "number"
+              },
+              {
+                "selector": "timestamp",
+                "text": "timestamp",
+                "type": "timestamp_epoch_s"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "be1j4lk4kfs3ka"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "refId": "A",
+            "type": "csv",
+            "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
+            "url_options": {
+              "method": "GET"
+            }
+          }
+        ],
+        "title": "Operations",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "default": false,
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j4lk4kfs3ka"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        },
+        "id": null,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "columns": [
+              {
+                "selector": "name",
+                "text": "name",
+                "type": "string"
+              },
+              {
+                "selector": "elapsed",
+                "text": "elapsed",
+                "type": "number"
+              },
+              {
+                "selector": "timestamp",
+                "text": "timestamp",
+                "type": "timestamp_epoch_s"
+              }
+            ],
+            "datasource": {
+              "type": "yesoreyeram-infinity-datasource",
+              "uid": "be1j4lk4kfs3ka"
+            },
+            "filters": [],
+            "format": "timeseries",
+            "global_query_id": "",
+            "refId": "A",
+            "type": "csv",
+            "url": "http://localhost:8080/benchmark_csv_total/benchmark_total.csv",
+            "url_options": {
+              "method": "GET"
+            }
+          }
+        ],
+        "title": "Elapsed",
+        "type": "timeseries"
+      }
+    ],
+    "preload": false,
+    "refresh": "5s",
+    "schemaVersion": 40,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "2024-10-21T09:37:00.000Z",
+      "to": "2024-10-21T11:30:12.000Z"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m"
+      ]
+    },
+    "timezone": "browser",
+    "title": "annotation-test",
+    "uid": "fe1j7hmfq60w0f",
+    "version": null,
+    "weekStart": ""
+  }
