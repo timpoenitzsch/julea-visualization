@@ -1,4 +1,5 @@
 {
+  "dashboard": {
     "annotations": {
       "list": [
         {
@@ -584,8 +585,11 @@
       ]
     },
     "timezone": "browser",
-    "title": "annotation-test",
+    "title": "skript-test",
     "uid": "fe1j7hmfq60w0f",
     "version": null,
     "weekStart": ""
-  }
+  },
+  "folderId": 0,
+  "overwrite": true
+}
