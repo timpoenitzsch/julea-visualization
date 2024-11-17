@@ -1,68 +1,129 @@
 #!/bin/bash
 
-# Setze die Basisordner
+# Basisordner setzen
 BASE_DIR="../"
 CSV_DIR="$BASE_DIR/benchmark_csv"
 ALERTING_DIR="$BASE_DIR/alerting"
 VALUES_FILE="$ALERTING_DIR/values.csv"
 
-# Erstelle das Verzeichnis für die Werte-CSV-Datei, falls es noch nicht existiert
+# Verzeichnis für die Werte-CSV-Datei erstellen, falls es nicht existiert
 mkdir -p "$ALERTING_DIR"
 
-# Initialisiere die Werte-CSV-Datei mit dem Kopf
-echo "name,min_elapsed,max_elapsed,mean_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,file_count" > "$VALUES_FILE"
+# Werte-CSV-Datei mit dem Kopf initialisieren
+echo "name,min_elapsed,max_elapsed,mean_elapsed,median_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,median_total_elapsed,file_count" > "$VALUES_FILE"
+
+# Temporäres Verzeichnis für Zwischenwerte erstellen
+TEMP_DIR=$(mktemp -d)
 
 # Anzahl der zu verarbeitenden Dateien (optional)
 NUM_FILES=${1:-0}
 
-# Erstelle eine Liste der zu verarbeitenden Dateien
+# Liste der zu verarbeitenden Dateien erstellen
 if [ "$NUM_FILES" -gt 0 ]; then
-    # Wähle die neuesten NUM_FILES Dateien aus
+    # Die neuesten NUM_FILES Dateien auswählen
     mapfile -t files < <(ls -1 -t "$CSV_DIR"/benchmark_results_*.csv | head -n "$NUM_FILES")
 else
-    # Verarbeite alle Dateien
+    # Alle Dateien verarbeiten
     mapfile -t files < <(ls -1 "$CSV_DIR"/benchmark_results_*.csv)
 fi
 
-# Verarbeite die ausgewählten Benchmark-Dateien
+# Funktion zum Bereinigen von Dateinamen
+sanitize_filename() {
+    local filename="$1"
+    # Ersetze alle nicht-alphanumerischen Zeichen durch Unterstriche
+    echo "$filename" | sed 's/[^A-Za-z0-9._-]/_/g'
+}
+
+# Verarbeitung der ausgewählten Benchmark-Dateien
 for file in "${files[@]}"; do
     # Überspringe die Kopfzeile und verarbeite die Datei
     tail -n +2 "$file" | while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
-        # Prüfe, ob der Name schon existiert und berechne min, max, mean für elapsed und total_elapsed
-        if grep -q "^$name," "$VALUES_FILE"; then
-            # Extrahiere bestehende Werte aus der Datei
-            IFS=',' read -r _ min_elapsed max_elapsed mean_elapsed min_total_elapsed max_total_elapsed mean_total_elapsed file_count <<< "$(grep "^$name," "$VALUES_FILE")"
-
-            # Berechne min, max und aktualisierten Mittelwert für elapsed
-            min_elapsed=$(echo "$min_elapsed $elapsed" | awk '{if ($2 < $1) print $2; else print $1}')
-            max_elapsed=$(echo "$max_elapsed $elapsed" | awk '{if ($2 > $1) print $2; else print $1}')
-
-            # Speichere vorherigen file_count
-            file_count_before=$file_count
-            file_count=$((file_count + 1))
-
-            # Berechne neuen Mittelwert für elapsed
-            sum_elapsed=$(echo "$mean_elapsed * $file_count_before + $elapsed" | bc -l)
-            mean_elapsed=$(echo "$sum_elapsed / $file_count" | bc -l)
-
-            # Berechne min, max und aktualisierten Mittelwert für total_elapsed
-            min_total_elapsed=$(echo "$min_total_elapsed $total_elapsed" | awk '{if ($2 < $1) print $2; else print $1}')
-            max_total_elapsed=$(echo "$max_total_elapsed $total_elapsed" | awk '{if ($2 > $1) print $2; else print $1}')
-
-            # Berechne neuen Mittelwert für total_elapsed
-            sum_total_elapsed=$(echo "$mean_total_elapsed * $file_count_before + $total_elapsed" | bc -l)
-            mean_total_elapsed=$(echo "$sum_total_elapsed / $file_count" | bc -l)
-
-            # Escape Schrägstriche und andere Sonderzeichen in $name für sed
-            escaped_name=$(printf '%s\n' "$name" | sed 's/[\/&]/\\&/g')
-
-            # Aktualisiere die Datei mit den neuen Werten
-            sed -i "s|^$escaped_name,.*|$name,$min_elapsed,$max_elapsed,$mean_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$file_count|" "$VALUES_FILE"
-        else
-            # Füge neuen Eintrag für den Namen hinzu, inklusive Zähler
-            echo "$name,$elapsed,$elapsed,$elapsed,$total_elapsed,$total_elapsed,$total_elapsed,1" >> "$VALUES_FILE"
-        fi
+        # Name bereinigen, um ihn als Dateinamen zu verwenden
+        sanitized_name=$(sanitize_filename "$name")
+        
+        # Mapping von sanitized_name zu originalem name speichern
+        echo "$sanitized_name|$name" >> "$TEMP_DIR/name_mapping.tmp"
+        
+        # Temporäre Dateien für jeden Namen erstellen
+        elapsed_file="$TEMP_DIR/elapsed_$sanitized_name.tmp"
+        total_elapsed_file="$TEMP_DIR/total_elapsed_$sanitized_name.tmp"
+        
+        # Aktuelle Werte zu den temporären Dateien hinzufügen
+        echo "$elapsed" >> "$elapsed_file"
+        echo "$total_elapsed" >> "$total_elapsed_file"
     done
 done
+
+# Doppelte Einträge in der Mapping-Datei entfernen
+sort -u "$TEMP_DIR/name_mapping.tmp" -o "$TEMP_DIR/name_mapping.tmp"
+
+# Assoziatives Array für das Mapping erstellen
+declare -A name_mapping
+while IFS='|' read -r sanitized_name original_name; do
+    name_mapping["$sanitized_name"]="$original_name"
+done < "$TEMP_DIR/name_mapping.tmp"
+
+# Verarbeitung der gesammelten Daten für jeden Namen
+for elapsed_file in "$TEMP_DIR"/elapsed_*.tmp; do
+    # Bereinigten Namen aus dem Dateinamen extrahieren
+    sanitized_name=$(basename "$elapsed_file" | sed 's/^elapsed_//' | sed 's/\.tmp$//')
+    total_elapsed_file="$TEMP_DIR/total_elapsed_$sanitized_name.tmp"
+    
+    # Originalen Namen aus dem Mapping erhalten
+    name="${name_mapping[$sanitized_name]}"
+    
+    # Werte in Arrays einlesen
+    mapfile -t elapsed_values < "$elapsed_file"
+    mapfile -t total_elapsed_values < "$total_elapsed_file"
+    
+    # Anzahl der Werte
+    file_count=${#elapsed_values[@]}
+    
+    if [ "$file_count" -eq 0 ]; then
+        continue
+    fi
+    
+    # Werte sortieren
+    sorted_elapsed=($(printf '%s\n' "${elapsed_values[@]}" | LC_ALL=C sort -n))
+    sorted_total_elapsed=($(printf '%s\n' "${total_elapsed_values[@]}" | LC_ALL=C sort -n))
+    
+    # Min, Max, Mean, Median für elapsed berechnen
+    min_elapsed=${sorted_elapsed[0]}
+    max_index=$((file_count - 1))
+    max_elapsed=${sorted_elapsed[$max_index]}
+    sum_elapsed=0
+    for value in "${elapsed_values[@]}"; do
+        sum_elapsed=$(echo "$sum_elapsed + $value" | bc -l)
+    done
+    mean_elapsed=$(echo "$sum_elapsed / $file_count" | bc -l)
+    median_index=$((file_count / 2))
+    if (( file_count % 2 == 1 )); then
+        # Ungerade Anzahl von Werten
+        median_elapsed=${sorted_elapsed[$median_index]}
+    else
+        # Gerade Anzahl von Werten --> Mittelwert der beiden mittleren Werte
+        index1=$((median_index - 1))
+        index2=$median_index
+        value1=${sorted_elapsed[$index1]}
+        value2=${sorted_elapsed[$index2]}
+        median_elapsed=$(echo "($value1 + $value2) / 2" | bc -l)
+    fi
+    
+    #Ausgabe in der Konsole
+    echo "Name: $name"
+    echo "Elapsed values: ${elapsed_values[@]}"
+    echo "Sorted elapsed values: ${sorted_elapsed[@]}"
+    echo "File count: $file_count"
+    echo "Median index: $median_index"
+    echo "Median elapsed: $median_elapsed"
+    echo "Mean elapsed: $mean_elapsed"
+    echo "---------------------------"
+    
+    # Ergebnisse in die Werte-CSV-Datei schreiben
+    echo "$name,$min_elapsed,$max_elapsed,$mean_elapsed,$median_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$median_total_elapsed,$file_count" >> "$VALUES_FILE"
+done
+
+# Temporäres Verzeichnis löschen
+rm -rf "$TEMP_DIR"
 
 echo "Zusammenfassung in $VALUES_FILE gespeichert."
