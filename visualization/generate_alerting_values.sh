@@ -10,7 +10,7 @@ VALUES_FILE="$ALERTING_DIR/values.csv"
 mkdir -p "$ALERTING_DIR"
 
 # Werte-CSV-Datei mit dem Kopf initialisieren
-echo "name,min_elapsed,max_elapsed,mean_elapsed,median_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,median_total_elapsed,file_count" > "$VALUES_FILE"
+echo "name,min_elapsed,max_elapsed,mean_elapsed,median_elapsed,modified_z_score_elapsed,lower_threshold_elapsed,upper_threshold_elapsed,min_total_elapsed,max_total_elapsed,mean_total_elapsed,median_total_elapsed,modified_z_score_total_elapsed,lower_threshold_total_elapsed,upper_threshold_total_elapsed,file_count" > "$VALUES_FILE"
 
 # Temporäres Verzeichnis für Zwischenwerte erstellen
 TEMP_DIR=$(mktemp -d)
@@ -40,14 +40,14 @@ for file in "${files[@]}"; do
     tail -n +2 "$file" | while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
         # Name bereinigen, um ihn als Dateinamen zu verwenden
         sanitized_name=$(sanitize_filename "$name")
-        
+
         # Mapping von sanitized_name zu originalem name speichern
         echo "$sanitized_name|$name" >> "$TEMP_DIR/name_mapping.tmp"
-        
+
         # Temporäre Dateien für jeden Namen erstellen
         elapsed_file="$TEMP_DIR/elapsed_$sanitized_name.tmp"
         total_elapsed_file="$TEMP_DIR/total_elapsed_$sanitized_name.tmp"
-        
+
         # Aktuelle Werte zu den temporären Dateien hinzufügen
         echo "$elapsed" >> "$elapsed_file"
         echo "$total_elapsed" >> "$total_elapsed_file"
@@ -68,59 +68,93 @@ for elapsed_file in "$TEMP_DIR"/elapsed_*.tmp; do
     # Bereinigten Namen aus dem Dateinamen extrahieren
     sanitized_name=$(basename "$elapsed_file" | sed 's/^elapsed_//' | sed 's/\.tmp$//')
     total_elapsed_file="$TEMP_DIR/total_elapsed_$sanitized_name.tmp"
-    
+
     # Originalen Namen aus dem Mapping erhalten
     name="${name_mapping[$sanitized_name]}"
-    
+
     # Werte in Arrays einlesen
     mapfile -t elapsed_values < "$elapsed_file"
     mapfile -t total_elapsed_values < "$total_elapsed_file"
-    
+
     # Anzahl der Werte
     file_count=${#elapsed_values[@]}
-    
+
     if [ "$file_count" -eq 0 ]; then
         continue
     fi
-    
-    # Werte sortieren
-    sorted_elapsed=($(printf '%s\n' "${elapsed_values[@]}" | LC_ALL=C sort -n))
-    sorted_total_elapsed=($(printf '%s\n' "${total_elapsed_values[@]}" | LC_ALL=C sort -n))
-    
-    # Min, Max, Mean, Median für elapsed berechnen
-    min_elapsed=${sorted_elapsed[0]}
-    max_index=$((file_count - 1))
-    max_elapsed=${sorted_elapsed[$max_index]}
-    sum_elapsed=0
-    for value in "${elapsed_values[@]}"; do
-        sum_elapsed=$(echo "$sum_elapsed + $value" | bc -l)
-    done
-    mean_elapsed=$(echo "$sum_elapsed / $file_count" | bc -l)
-    median_index=$((file_count / 2))
-    if (( file_count % 2 == 1 )); then
-        # Ungerade Anzahl von Werten
-        median_elapsed=${sorted_elapsed[$median_index]}
-    else
-        # Gerade Anzahl von Werten --> Mittelwert der beiden mittleren Werte
-        index1=$((median_index - 1))
-        index2=$median_index
-        value1=${sorted_elapsed[$index1]}
-        value2=${sorted_elapsed[$index2]}
-        median_elapsed=$(echo "($value1 + $value2) / 2" | bc -l)
-    fi
-    
-    #Ausgabe in der Konsole
-    echo "Name: $name"
-    echo "Elapsed values: ${elapsed_values[@]}"
-    echo "Sorted elapsed values: ${sorted_elapsed[@]}"
-    echo "File count: $file_count"
-    echo "Median index: $median_index"
-    echo "Median elapsed: $median_elapsed"
-    echo "Mean elapsed: $mean_elapsed"
-    echo "---------------------------"
-    
+
+    # Funktionen zur Berechnung von Statistikwerten mit awk
+    calculate_stats() {
+        local values=("$@")
+        printf '%s\n' "${values[@]}" | awk '
+        {
+            count[NR] = $1
+            sum += $1
+        }
+        END {
+            n = NR
+            asort(count)
+            min = count[1]
+            max = count[n]
+            mean = sum / n
+            if (n % 2) {
+                median = count[(n + 1) / 2]
+            } else {
+                median = (count[n/2] + count[n/2 + 1]) / 2
+            }
+            printf "%f %f %f %f\n", min, max, mean, median
+        }'
+    }
+
+    # Berechnung der Statistik für elapsed
+    read min_elapsed max_elapsed mean_elapsed median_elapsed <<<$(calculate_stats "${elapsed_values[@]}")
+
+    # Berechnung der Statistik für total_elapsed
+    read min_total_elapsed max_total_elapsed mean_total_elapsed median_total_elapsed <<<$(calculate_stats "${total_elapsed_values[@]}")
+
+    # Funktion zur Berechnung der Schwellenwerte und modifizierten Z-Scores mit awk
+    calculate_thresholds_and_zscore() {
+        local median="$1"
+        shift
+        local values=("$@")
+        printf '%s\n' "${values[@]}" | awk -v median="$median" '
+        {
+            data[NR] = $1
+            deviation = ($1 > median) ? $1 - median : median - $1
+            deviations[NR] = deviation
+        }
+        END {
+            n = NR
+            asort(deviations)
+            if (n % 2) {
+                mad = deviations[(n + 1) / 2]
+            } else {
+                mad = (deviations[n/2] + deviations[n/2 + 1]) / 2
+            }
+            threshold = (3.5 * mad) / 0.6745
+            upper = median + threshold
+            lower = median - threshold
+
+            # Berechnung des modifizierten Z-Scores für den neuesten Wert
+            latest_value = data[n]
+            if (mad != 0) {
+                modified_z_score = 0.6745 * (latest_value - median) / mad
+            } else {
+                modified_z_score = 0
+            }
+
+            printf "%f %f %f\n", modified_z_score, lower, upper
+        }'
+    }
+
+    # Berechnung der Schwellenwerte und des modifizierten Z-Scores für elapsed
+    read modified_z_score_elapsed lower_threshold_elapsed upper_threshold_elapsed <<<$(calculate_thresholds_and_zscore "$median_elapsed" "${elapsed_values[@]}")
+
+    # Berechnung der Schwellenwerte und des modifizierten Z-Scores für total_elapsed
+    read modified_z_score_total_elapsed lower_threshold_total_elapsed upper_threshold_total_elapsed <<<$(calculate_thresholds_and_zscore "$median_total_elapsed" "${total_elapsed_values[@]}")
+
     # Ergebnisse in die Werte-CSV-Datei schreiben
-    echo "$name,$min_elapsed,$max_elapsed,$mean_elapsed,$median_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$median_total_elapsed,$file_count" >> "$VALUES_FILE"
+    echo "$name,$min_elapsed,$max_elapsed,$mean_elapsed,$median_elapsed,$modified_z_score_elapsed,$lower_threshold_elapsed,$upper_threshold_elapsed,$min_total_elapsed,$max_total_elapsed,$mean_total_elapsed,$median_total_elapsed,$modified_z_score_total_elapsed,$lower_threshold_total_elapsed,$upper_threshold_total_elapsed,$file_count" >> "$VALUES_FILE"
 done
 
 # Temporäres Verzeichnis löschen
