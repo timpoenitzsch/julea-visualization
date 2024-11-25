@@ -29,3 +29,4 @@ benchmark_metrics.txt
 benchmark_csv_total/*
 alerting/*
 commit_timestamps/*
+alert_rules/*
