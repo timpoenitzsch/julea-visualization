@@ -28,7 +28,6 @@ fi
 # Funktion zum Bereinigen von Dateinamen
 sanitize_filename() {
     local filename="$1"
-    # Ersetze alle nicht-alphanumerischen Zeichen durch Unterstriche
     echo "$filename" | sed 's/[^A-Za-z0-9._-]/_/g'
 }
 
@@ -46,14 +45,14 @@ for file in "${files[@]}"; do
     filename=$(basename "$file")
     current_timestamp=$(echo "$filename" | sed 's/^benchmark_results_//' | sed 's/\.csv$//')
 
-    # Prüfen, ob current_timestamp numerisch ist (optional)
+    # Prüfen, ob current_timestamp numerisch ist
     if ! [[ "$current_timestamp" =~ ^[0-9]+$ ]]; then
         # Wenn nicht numerisch, überspringen oder behandeln
         echo "Warnung: $filename hat keinen numerischen Timestamp."
         continue
     fi
 
-    # Statt Pipe: Prozesssubstitution verwenden
+    # Prozesssubstitution verwenden
     while IFS=$'\t' read -r name elapsed operations bytes total_elapsed; do
         # Name bereinigen
         sanitized_name=$(sanitize_filename "$name")

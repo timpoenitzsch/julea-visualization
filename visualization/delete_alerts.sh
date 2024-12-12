@@ -14,10 +14,6 @@ ALL_RULES_JSON=$(curl -s -X GET "$GRAFANA_HOST/api/v1/provisioning/alert-rules" 
   -H "Authorization: Bearer $API_TOKEN" \
   -H "Content-Type: application/json")
 
-# Falls Sie sicherstellen wollen, dass es sich um ein JSON Array handelt, können Sie es kurz validieren:
-# echo "$ALL_RULES_JSON" | jq . > /dev/null
-
-# Jetzt gehen wir davon aus, dass die Antwort ein Array von Alert-Regeln ist.
 UIDS_TO_DELETE=$(echo "$ALL_RULES_JSON" | jq -r '.[] | select(.title | test("_elapsed$") or test("_total_elapsed$")) | .uid')
 
 if [ -z "$UIDS_TO_DELETE" ]; then

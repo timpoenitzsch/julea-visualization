@@ -81,7 +81,6 @@ head "$CSV_FILE"
 
 echo "Starte Verarbeitung..."
 
-# CSV ist komma-getrennt
 tail -n +2 "$CSV_FILE" | while IFS=',' read -r name min_elapsed max_elapsed mean_elapsed median_elapsed modified_z_score_elapsed \
     lower_threshold_elapsed upper_threshold_elapsed \
     min_total_elapsed max_total_elapsed mean_total_elapsed median_total_elapsed \
