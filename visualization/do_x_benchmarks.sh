@@ -9,7 +9,7 @@ VALUES_FILE="$ALERTING_DIR/values.csv"
 # Erstelle die Ordner für CSV-Dateien, falls sie nicht existieren
 mkdir -p "$CSV_DIR"
 
-NUM_ITERATIONS=${1:-10}
+NUM_ITERATIONS=${1:-1}
 SLEEP_TIME=${2:-600}
 
 # Führe x Benchmarks aus
