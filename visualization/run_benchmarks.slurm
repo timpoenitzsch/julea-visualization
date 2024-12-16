@@ -4,6 +4,7 @@
 #SBATCH --error=run_benchmarks-%j.err
 #SBATCH --time=0-24:00:00
 #SBATCH --ntasks=1
+#SBATCH --nodelist=ant13
 #SBATCH --cpus-per-task=47
 #SBATCH --mail-type=END
 #SBATCH --mail-user=tim.poenitzsch@st.ovgu.de
