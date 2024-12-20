@@ -36,15 +36,14 @@ declare -A latest_total_elapsed
 #mapping file for names (path)
 : > "$TEMP_DIR/name_mapping.tmp"
 
-# Dateien verarbeiten
 for file in "${files[@]}"; do
     # get timestampf from filename
     filename=$(basename "$file")
     current_timestamp=$(echo "$filename" | sed 's/^benchmark_results_//' | sed 's/\.csv$//')
 
-    # check if timestamp is numeric
+    # check if timestamp is numerical
     if ! [[ "$current_timestamp" =~ ^[0-9]+$ ]]; then
-        # avoid issues for non-numeric data
+        # avoid issues for non-numerical data
         echo "Warnung: $filename hat keinen numerischen Timestamp."
         continue
     fi
