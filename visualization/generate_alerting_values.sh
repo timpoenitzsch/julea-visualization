@@ -37,7 +37,7 @@ declare -A latest_total_elapsed
 : > "$TEMP_DIR/name_mapping.tmp"
 
 for file in "${files[@]}"; do
-    # get timestampf from filename
+    # get timestamp from filename
     filename=$(basename "$file")
     current_timestamp=$(echo "$filename" | sed 's/^benchmark_results_//' | sed 's/\.csv$//')
 
