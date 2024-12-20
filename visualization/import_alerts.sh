@@ -3,7 +3,6 @@ set -euo pipefail
 
 OUTPUT_DIR="../alert_rules"
 
-# Überprüfen, ob die Umgebungsvariable GRAFANA_API_TOKEN gesetzt ist
 if [ -z "${GRAFANA_API_TOKEN:-}" ]; then
     echo "GRAFANA_API_TOKEN ist nicht gesetzt."
     exit 1

@@ -5,7 +5,7 @@ GRAFANA_HOST="http://localhost:3000"
 API_TOKEN="${GRAFANA_API_TOKEN:-}"
 
 if [ -z "$API_TOKEN" ]; then
-    echo "Fehler: Bitte setzen Sie die Umgebungsvariable GRAFANA_API_TOKEN."
+    echo "Fehler: Umgebungsvariable GRAFANA_API_TOKEN wurde nicht gesetzt"
     exit 1
 fi
 
@@ -24,7 +24,7 @@ fi
 echo "Folgende Alert-Regeln werden gelöscht:"
 echo "$UIDS_TO_DELETE"
 
-# Lösche jede gefundene Regel
+# delete rules
 for uid in $UIDS_TO_DELETE; do
     echo "Lösche Alert-Regel mit UID: $uid"
     curl -s -X DELETE "$GRAFANA_HOST/api/v1/provisioning/alert-rules/$uid" \

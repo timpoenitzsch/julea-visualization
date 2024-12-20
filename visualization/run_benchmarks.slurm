@@ -33,7 +33,6 @@ for ((i=1; i<=$RUNS; i++)); do
     echo "./scripts/setup.sh stop"
     ./scripts/setup.sh stop
     
-    # Nach jedem Durchlauf eine Stunde warten, außer nach dem letzten Durchlauf
     if [ $i -lt $RUNS ]; then
         sleep 3600
     fi
