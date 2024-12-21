@@ -4,12 +4,12 @@ set -euo pipefail
 OUTPUT_DIR="../alert_rules"
 
 if [ -z "${GRAFANA_API_TOKEN:-}" ]; then
-    echo "GRAFANA_API_TOKEN ist nicht gesetzt."
+    echo "GRAFANA_API_TOKEN is not set."
     exit 1
 fi
 
 for json_file in "$OUTPUT_DIR"/*.json; do
-    echo "Importiere Alert-Regel: $json_file"
+    echo "import alert-rule: $json_file"
     curl -X POST "http://localhost:3000/api/v1/provisioning/alert-rules" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $GRAFANA_API_TOKEN" \
