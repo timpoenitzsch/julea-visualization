@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Name der CSV-Datei
+# name of the CSV-file
 BASE_DIR="../"
 CSV_DIR="$BASE_DIR/commit_timestamps"
 OUTPUT_FILE="$CSV_DIR/commit_timestamps.csv"
 
 mkdir -p "$CSV_DIR"
 
-# Schreibe den Kopf in die CSV-Datei
+# header
 echo "SHA,timestamp" > "$OUTPUT_FILE"
 
-# Füge die Informationen der Commits hinzu
+# add commit information
 git log --pretty=format:'%h,%at' -- $(git ls-tree -r HEAD --name-only) >> "$OUTPUT_FILE" 
 #git log --pretty=format:'%h,%at' >> "$OUTPUT_FILE"  
 
