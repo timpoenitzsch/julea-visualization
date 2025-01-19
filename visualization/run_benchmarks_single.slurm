@@ -15,9 +15,12 @@ cd /scratch/hdd/visualization-tests-poenitzsch/julea-visualization
 echo "starting benchmark $i"
 echo ". scripts/environment.sh"
 . scripts/environment.sh
-    
-echo "./scripts/setup.sh start"
-./scripts/setup.sh start
+
+echo "./scripts/setup.sh clean-local"
+./scripts/setup.sh clean-local
+
+echo "./scripts/setup.sh start-local"
+./scripts/setup.sh start-local
 
 echo "cd visualization"
 cd visualization
@@ -26,7 +29,10 @@ echo "./do_x_benchmarks.sh"
 echo "cd .."
 cd ..
 
-echo "./scripts/setup.sh stop"
-./scripts/setup.sh stop
+echo "./scripts/setup.sh stop-local"
+./scripts/setup.sh stop-local
+
+echo "./scripts/setup.sh clean-local"
+./scripts/setup.sh clean-local
 
 echo "end of benchmark"
