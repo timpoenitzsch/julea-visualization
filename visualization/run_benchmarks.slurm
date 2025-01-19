@@ -19,9 +19,13 @@ for ((i=1; i<=$RUNS; i++)); do
     echo "starting benchmark $i"
     echo ". scripts/environment.sh"
     . scripts/environment.sh
+
     
-    echo "./scripts/setup.sh start"
-    ./scripts/setup.sh start
+    echo "./scripts/setup.sh clean-local"
+    ./scripts/setup.sh clean-local
+
+    echo "./scripts/setup.sh start-local"
+    ./scripts/setup.sh start-local
 
     echo "cd visualization"
     cd visualization
@@ -30,8 +34,12 @@ for ((i=1; i<=$RUNS; i++)); do
     echo "cd .."
     cd ..
 
-    echo "./scripts/setup.sh stop"
-    ./scripts/setup.sh stop
+    echo "./scripts/setup.sh stop-local"
+    ./scripts/setup.sh stop-local
+
+    
+    echo "./scripts/setup.sh clean-local"
+    ./scripts/setup.sh clean-local
     
     if [ $i -lt $RUNS ]; then
         sleep 3600
