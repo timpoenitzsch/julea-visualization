@@ -9,7 +9,7 @@ OUTPUT_FILE="$OUTPUT_DIR/benchmark_total.csv"
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Überschrift für die neue Spalte
+# create header
 echo "name,elapsed,operations,bytes,total_elapsed,timestamp" > "$OUTPUT_FILE"
 
 # Merge all CSV-files
