@@ -4,7 +4,7 @@ set -euo pipefail
 OUTPUT_DIR="../alert_rules"
 
 if [ -z "${GRAFANA_API_TOKEN:-}" ]; then
-    echo "GRAFANA_API_TOKEN is not set."
+    echo "GRAFANA_API_TOKEN wurde nicht gesetzt."
     exit 1
 fi
 
