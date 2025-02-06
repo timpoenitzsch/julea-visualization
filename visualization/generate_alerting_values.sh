@@ -169,4 +169,4 @@ done
 
 rm -rf "$TEMP_DIR"
 
-echo "Zusammenfassung in $VALUES_FILE gespeichert."
+echo "Datei als $VALUES_FILE gespeichert."
