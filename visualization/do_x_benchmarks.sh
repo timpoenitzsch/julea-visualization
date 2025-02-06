@@ -19,7 +19,9 @@ for i in $(seq 1 $NUM_ITERATIONS); do
     LOG_FILE="$LOG_DIR/benchmark_log_$UNIX_TIMESTAMP.log"
     
     #execute benchmark and save information in log- and CSV-file
-    ../scripts/benchmark.sh -m 2> "$LOG_FILE" | \
+    ../scripts/benchmark.sh -m \
+        2> >(grep -v 'Dependencies have already been loaded, skipping.' \
+             > "$LOG_FILE") \
         # if dependencies were not loaded, respective messages are not saved in CSV-File
         grep -v '^Dependency "' \
         > "$CSV_FILE"
