@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define file
+# Define file path
 FILE="../benchmark_csv_total/benchmark_total.csv"
 
 # Check each line of the file
